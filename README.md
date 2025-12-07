@@ -1,7 +1,7 @@
 <h1 align="left">⚡🧙‍♂️ Hi, I'm <b>Gandalf</b></h1>
 <p align="left"><b>Smart Contract Developer • Web3 Security Researcher (in progress)</b></p>
 
-<p align="left">Hi, I’m Gandalf. I'm currently learning EVM-based development and smart contract security.  
+<p align="left">I'm currently learning EVM-based development and smart contract security.  
 All of my progress, notes, and projects will be shared here on GitHub.</p>
 
 ---
