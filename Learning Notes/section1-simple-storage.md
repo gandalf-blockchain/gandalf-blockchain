@@ -493,4 +493,444 @@ Questions to Explore:
 - Arrays/Structs: ████████░░ 80%
 - Data locations: █████████░ 90% ⭐
 
-Ready for: Deployment practice & next section ✅
+## 🎯 LESSON 11: MAPPINGS
+
+### Konsep Dasar
+
+Mapping adalah struktur data yang menghubungkan satu nilai (key) dengan nilai lainnya (value), seperti kamus atau phonebook.
+
+```solidity
+// Deklarasi mapping
+mapping(string => uint256) public nameToFavoriteNumber;
+
+// Contoh penggunaan
+nameToFavoriteNumber["ozi"] = 18;
+nameToFavoriteNumber["budi"] = 7;
+
+```
+
+### 🏠 ANALOGI: Kamus / Phonebook
+
+**Mapping = Buku telepon**
+
+- **Key (string)** = Nama orang
+- **Value (uint256)** = Nomor telepon orang tersebut
+
+**Cara kerja:**
+
+- Cari nama "ozi" → Langsung dapat nomor 18 (INSTAN!)
+- Tidak perlu baca satu-satu dari halaman pertama
+
+### ⚡ Kenapa Pakai Mapping vs Array?
+
+**Array (cara lama):**
+
+```solidity
+// Harus loop semua data - LAMBAT & MAHAL GAS!
+for(uint256 i = 0; i < listOfPeople.length; i++) {
+    if (listOfPeople[i].name == "ozi") {
+        return listOfPeople[i].favoriteNumber;
+    }
+}
+
+```
+
+**Mapping (cara cepat):**
+
+```solidity
+// Langsung dapat! O(1) - INSTAN
+uint256 number = nameToFavoriteNumber["ozi"]; // 18
+
+```
+
+### 📊 Perbandingan:
+
+| Aspek | Array | Mapping |
+| --- | --- | --- |
+| Pencarian | O(n) - Loop semua | O(1) - Langsung |
+| Gas Cost | Mahal (loop) | Murah (direct access) |
+| Iterasi | Bisa di-loop | TIDAK bisa di-loop |
+| Use Case | List data terurut | Lookup cepat |
+
+### 🎯 Real Project Application:
+
+- **Token balances** - `mapping(address => uint256) public balances`
+- **NFT ownership** - `mapping(uint256 => address) public tokenOwner`
+- **Whitelist** - `mapping(address => bool) public isWhitelisted`
+- **User profiles** - `mapping(address => User) public users`
+
+### 💡 Key Insights:
+
+- Mapping TIDAK bisa di-loop (ga ada `.length`)
+- Default value: semua key yang belum di-set = 0 (atau false untuk bool)
+- Mapping hanya bisa disimpan di **storage**, tidak bisa di memory/calldata
+- Sangat efisien untuk lookup data berdasarkan key unik
+
+---
+
+## 🚀 LESSON 12: DEPLOYING YOUR FIRST CONTRACT
+
+### Pre-Deployment Checklist:
+
+1. ✅ **Compilation check** - Pastikan no errors
+2. ✅ **Change environment** - Dari VM ke Injected Provider (MetaMask)
+3. ✅ **Connect account** - Pilih wallet yang ada testnet ETH
+4. ✅ **Confirm transaction** - Bayar gas fee
+5. ✅ **Interact with deployed contract** - Test functions
+
+### 🏗️ ANALOGI: Membangun Rumah
+
+**Deploy Contract = Bangun rumah dari blueprint**
+
+- **Contract code** = Blueprint rumah (design di kertas)
+- **Compile** = Cek blueprint valid
+- **Deploy** = Mulai bangun rumah fisik
+- **Contract address** = Alamat rumah (permanent!)
+- **Interact** = Pakai rumah (masuk, keluar, atur furniture)
+
+### 📝 Code Example:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.18;
+
+contract SimpleStorage {
+    // State variables - STORAGE (permanent)
+    uint256 public myFavoriteNumber; // Default: 0
+
+    struct Person {
+        uint256 favoriteNumber;
+        string name;
+    }
+
+    Person[] public listOfPeople; // Dynamic array
+    mapping(string => uint256) public nameToFavoriteNumber;
+
+    // Function untuk update state - BUTUH GAS
+    function store(uint256 _favoriteNumber) public {
+        myFavoriteNumber = _favoriteNumber;
+    }
+
+    // Function view - GRATIS GAS (kalau dipanggil dari luar)
+    function retrieve() public view returns (uint256) {
+        return myFavoriteNumber;
+    }
+
+    // Function dengan memory parameter
+    function addPerson(string memory _name, uint256 _favoriteNumber) public {
+        listOfPeople.push(Person(_favoriteNumber, _name));
+        nameToFavoriteNumber[_name] = _favoriteNumber;
+    }
+}
+
+```
+
+### 🔑 Data Locations:
+
+```solidity
+// STORAGE - Permanent di blockchain (seperti hard disk)
+uint256 public myNumber; // State variable = storage
+
+// MEMORY - Temporary, bisa diubah (seperti RAM)
+function addPerson(string memory _name) public {
+    // _name bisa diubah di dalam function
+}
+
+// CALLDATA - Temporary, READ-ONLY (seperti DVD-ROM)
+function addPerson(string calldata _name) public {
+    // _name TIDAK bisa diubah, lebih hemat gas!
+}
+
+```
+
+### 💰 Gas Costs:
+
+- **Deploy contract:** ~200,000 - 500,000 gas
+- **store() function:** ~43,000 gas
+- **retrieve() function:** 0 gas (view function, kalau dipanggil eksternal)
+- **addPerson():** ~100,000+ gas (nulis ke storage)
+
+### 🎯 Real Project Application:
+
+Setiap dApp butuh deploy contract:
+
+- **Uniswap** - Deploy Router, Factory contracts
+- **OpenSea** - Deploy NFT marketplace contract
+- **Aave** - Deploy lending pool contracts
+
+---
+
+## 📝 LESSON 13: QUIZ - SIMPLE STORAGE MID SECTION RECAP
+
+### Key Concepts Review:
+
+1. ✅ Solidity versions & pragma
+2. ✅ Variable types: uint256, string, boolean, address
+3. ✅ Structs untuk grouping data
+4. ✅ Arrays untuk list data
+5. ✅ Mappings untuk efficient lookup
+6. ✅ Functions: public, view, pure
+7. ✅ Data locations: storage, memory, calldata
+8. ✅ Deploy & interact dengan contracts
+
+### 💡 Critical Understanding:
+
+- **storage** = Permanent (mahal gas)
+- **memory** = Temporary, mutable (murah gas)
+- **calldata** = Temporary, immutable (paling murah)
+- **view** functions = Read-only, gratis gas
+- **Mapping** = Lookup cepat, ga bisa loop
+- **Array** = Bisa loop, lookup lambat
+
+---
+
+## 🌉 LESSON 14-15: ZKSYNC DEPLOYMENT & BRIDGING
+
+### Apa itu zkSync?
+
+**zkSync = Layer 2 solution untuk Ethereum**
+
+### 🚗 ANALOGI: Jalan Tol
+
+**Ethereum (Layer 1)** = Jalan tol utama
+
+- Aman ✅
+- Tapi macet 🚗🚗🚗
+- Mahal (bayar tol tiap mobil) 💸💸💸
+
+**zkSync (Layer 2)** = Jalan alternatif
+
+- Tetap aman ✅
+- Lancar ⚡
+- Murah (bayar tol sekali untuk bus isi 100 orang) 💸
+
+### 🔑 Key Concepts:
+
+**Layer 2 = Scalability Solution**
+
+- Proses transaksi OFF-CHAIN (di luar Ethereum)
+- Bundle ribuan transaksi jadi 1 "proof"
+- Submit 1 proof ke Ethereum
+- Gas dibagi ke semua transaksi → 100x lebih murah!
+
+### 🌉 Bridging Process:
+
+1. **Sepolia ETH** (Ethereum testnet)
+2. **zkSync Bridge** → Transfer
+3. **zkSync Sepolia ETH** (zkSync testnet)
+
+**ANALOGI:** Money changer
+
+- Tukar Rupiah → Dollar Singapore
+- Sama-sama uang, beda network
+
+### 💰 Gas Comparison:
+
+| Network | Deploy Gas Cost | Transaction Cost |
+| --- | --- | --- |
+| Ethereum Sepolia | ~0.001-0.01 ETH | ~$5-$20 (mainnet) |
+| zkSync Sepolia | ~0.00001 ETH | ~$0.05-$0.50 (mainnet) |
+| **Savings** | **100x lebih murah** | **100x lebih murah** |
+
+### 🎯 Real Project Application:
+
+Project besar pakai Layer 2 untuk UX:
+
+- **Uniswap** ada di Arbitrum & Optimism
+- **Aave** ada di Polygon
+- **dYdX** pakai StarkNet
+- **Immutable X** untuk NFT gaming
+
+---
+
+## 🔌 LESSON 16-18: ZKSYNC PLUGIN & INTERACTIONS
+
+### Setup zkSync di Remix:
+
+1. Install zkSync plugin
+2. Compile contract (sama seperti biasa)
+3. Change environment ke zkSync
+4. Deploy dengan MetaMask connected ke zkSync network
+5. Interact dengan deployed contract
+
+### 💻 Code tetap SAMA PERSIS:
+
+```solidity
+// Code ini jalan di Ethereum DAN zkSync!
+contract SimpleStorage {
+    uint256 public myNumber;
+
+    function store(uint256 _num) public {
+        myNumber = _num;
+    }
+}
+
+```
+
+### 🔑 EVM-Compatible:
+
+**zkSync = EVM-compatible** artinya:
+
+- Code Solidity yang SAMA bisa jalan di semua chain
+- Ethereum, zkSync, Arbitrum, Optimism, Polygon, Base, dll
+- Developer cukup belajar Solidity 1x!
+
+### 📱 ANALOGI: Android Apps
+
+- **Solidity code** = Aplikasi Android
+- **EVM chains** = HP Samsung, Xiaomi, Oppo
+- App yang sama bisa jalan di semua HP Android!
+
+### 🎯 Security Implication (Auditor POV):
+
+**Bug di Solidity = Bug di SEMUA chain**
+
+```solidity
+// Bug reentrancy ini berbahaya di Ethereum & zkSync
+function withdraw() public {
+    msg.sender.call{value: balance}(""); // ❌ VULNERABLE!
+    balance = 0;
+}
+
+```
+
+---
+
+## 🎓 LESSON 20: SECTION RECAP - EVM & SOLIDITY FUNDAMENTALS
+
+### ✅ What You Mastered:
+
+**1. Solidity Basics:**
+
+- ✅ Pragma & versions
+- ✅ Variable types
+- ✅ Structs & Arrays
+- ✅ Mappings
+- ✅ Functions (public, view, pure, payable)
+- ✅ Data locations (storage, memory, calldata)
+
+**2. Smart Contract Lifecycle:**
+
+- ✅ Write code
+- ✅ Compile
+- ✅ Deploy (Sepolia & zkSync)
+- ✅ Interact
+- ✅ Verify on explorer
+
+**3. Blockchain Concepts:**
+
+- ✅ EVM compatibility
+- ✅ Layer 1 vs Layer 2
+- ✅ Gas optimization importance
+- ✅ Testnet vs Mainnet
+
+### 🔥 Critical Takeaways:
+
+**Gas Optimization Matters!**
+
+```solidity
+// ❌ MAHAL - Read storage 3x
+function calculate() public view returns (uint256) {
+    return myNumber + myNumber + myNumber; // 3x storage read
+}
+
+// ✅ MURAH - Cache ke memory
+function calculate() public view returns (uint256) {
+    uint256 num = myNumber; // 1x storage read
+    return num + num + num; // 3x memory read (cheap!)
+}
+
+```
+
+**Security dari Awal!**
+
+- Selalu pakai latest Solidity version (0.8.x ada overflow protection)
+- Pakai `public` dengan hati-hati (siapa boleh akses?)
+- Test di testnet dulu sebelum mainnet
+- Audit code sebelum production
+
+### 🎯 Next Steps:
+
+- ✅ Section 1 DONE!
+- ⏭️ Section 2: Storage Factory (contract interactions)
+- 🔜 Section 3: Fund Me (payable functions, real DeFi)
+- 🔜 Advanced: Auditing, security patterns
+
+---
+
+## 📊 SUMMARY TABLE: LESSON 11-20
+
+| Lesson | Topic | Key Concept | Difficulty |
+| --- | --- | --- | --- |
+| 11 | Mappings | O(1) lookup, gas efficient | ⭐⭐ |
+| 12 | Deploy Contract | From code to blockchain | ⭐⭐⭐ |
+| 13 | Quiz | Knowledge check | ⭐ |
+| 14 | zkSync Intro | Layer 2 solution | ⭐⭐ |
+| 15 | Bridging | ETH → zkSync | ⭐⭐ |
+| 16 | zkSync Plugin | Deploy to L2 | ⭐⭐⭐ |
+| 17 | Plugin Fix | Troubleshooting | ⭐ |
+| 18 | Interactions | Test deployed contract | ⭐⭐ |
+| 19 | Share | Build in public | ⭐ |
+| 20 | Recap | EVM fundamentals | ⭐⭐ |
+
+---
+
+## 🎓 AUDITOR MINDSET NOTES:
+
+### Things to Watch For:
+
+1. **Mapping vulnerabilities:**
+    - Default values (unset mapping = 0/false)
+    - No length property (can't iterate)
+2. **Gas optimization:**
+    - Storage reads are expensive (20,000+ gas)
+    - Cache to memory when possible
+3. **EVM compatibility:**
+    - Same code, same bugs across chains
+    - Layer 2 specific: bridge exploits, sequencer risks
+4. **Data location bugs:**
+    - Forgetting `memory`/`calldata` on strings/arrays
+    - Using `storage` pointer accidentally
+
+### Real Vulnerabilities Seen:
+
+- **Reentrancy** (will learn later) - $60M+ DAO hack
+- **Integer overflow** (Solidity 0.8+ fixed) - $20M+ exploits
+- **Access control** missing - Parity wallet hack
+- **Gas optimization** ignored - Poor UX, users leave
+
+---
+
+## 💎 GOLDEN RULES FROM SECTION 1:
+
+1. **Storage = Mahal, Memory = Murah** 💰
+2. **View functions = Gratis** (kalau eksternal) 🎁
+3. **Mapping untuk lookup, Array untuk iterate** 🔍
+4. **EVM-compatible = Write once, deploy anywhere** 🌍
+5. **Layer 2 = Same security, 100x cheaper** ⚡
+6. **Test di testnet, deploy di mainnet** 🧪
+7. **Gas optimization = User experience** 😊
+8. **Security dari hari pertama** 🛡️
+
+---
+
+## 🚀 READY FOR SECTION 2!
+
+**Skills Unlocked:**
+
+- ✅ Write basic Solidity contracts
+- ✅ Deploy to multiple networks
+- ✅ Understand gas economics
+- ✅ EVM compatibility awareness
+- ✅ Security mindset initialized
+
+**Next Level:**
+
+- 🔜 Contract interactions (calling other contracts)
+- 🔜 Inheritance & interfaces
+- 🔜 Payable functions (accepting ETH)
+- 🔜 Real DeFi patterns
+
+---
+
+**END OF LEARNING NOTES - DAY 2***Section 1: Simple Storage - COMPLETED! 🎉*
