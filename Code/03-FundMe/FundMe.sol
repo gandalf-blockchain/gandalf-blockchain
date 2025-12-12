@@ -29,7 +29,7 @@ contract FundMe {
         addressToAmountFunded[funder] = 0;
         }
         funders = new address[](0);
-        // // transfer
+        // // transfers
         // payable(msg.sender).transfer(address(this).balance);
 
         // // send
